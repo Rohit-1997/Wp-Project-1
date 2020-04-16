@@ -15,7 +15,7 @@ def home():
     return render_template("home.html", title="Home")
 
 
-
+@app.route("/register", methods=['GET','POST'])
 def register():
     reg_form = RegistrationForm()
     # if the user is valid he will be redirected to the login page
