@@ -30,9 +30,12 @@ def register():
     # if the user is valid he will be redirected to the login page
     if reg_form.validate_on_submit():
         # adding the data to the Database
-        db_helper = DB_Helper(db)
-        db_helper.add_record(reg_form)
-        flash(f'Created account for {reg_form.username.data}', 'success')
+        try:
+            db_helper = DB_Helper(db,User)
+            db_helper.add_record(reg_form)
+            flash(f'Created account for {reg_form.username.data}', 'success')
+        except:
+            flash(f'Not able to create the account at the moment, please try later', 'danger')
         return redirect(url_for('home'))
     return render_template('registration.html', title='Register', reg_form=reg_form)
 
@@ -48,6 +51,19 @@ def login():
         else:
             flash('login not succecssful', 'danger')
     return render_template('login.html', title='Login', login_form=login_form)
+
+
+# The admin route
+@app.route("/admin")
+def admin():
+    """
+    Query the registration data and display to the end user
+    """
+    db_helper = DB_Helper(db,User)
+    data = db_helper.query_records()
+    for ele in data:
+        print(ele.username)
+    return render_template('admin.html', data=data)
 
 
 
