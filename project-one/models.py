@@ -16,3 +16,12 @@ class User(db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     register_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+
+# Creating the books model
+class Books(db.Model):
+    __tablename__ = "books"
+    isbn = db.Column(db.String(50), primary_key=True, nullable=False)
+    title = db.Column(db.String(200), nullable=False)
+    author = db.Column(db.String(150), nullable=False)
+    year = db.Column(db.Integer, nullable=False)
