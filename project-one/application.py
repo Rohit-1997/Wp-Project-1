@@ -3,6 +3,8 @@ import os
 from flask import Flask, render_template, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from forms import RegistrationForm, LoginForm
+from models import *
+from database_helper import DB_Helper
 
 # creating an instance of Flask
 app = Flask(__name__)
@@ -11,8 +13,8 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'f9a1520561f1faf67f36a3a620a45e80'
 
 # setting up the database and database instance
-app.config["SQLAlchemy_DATABASE_URI"] = 'postgres://rvfihnnxofkits:38a240139b9c256dcb9b803266fd4576da0379815cc043c4b28fedc99503c709@ec2-34-197-212-240.compute-1.amazonaws.com:5432/d6jd4cr061n7n6'
-# app.config["SQLAlchemy_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 
 # The home page function
@@ -27,8 +29,9 @@ def register():
     reg_form = RegistrationForm()
     # if the user is valid he will be redirected to the login page
     if reg_form.validate_on_submit():
-        # printing the form data in the flask console
-        print(reg_form.data)
+        # adding the data to the Database
+        db_helper = DB_Helper(db)
+        db_helper.add_record(reg_form)
         flash(f'Created account for {reg_form.username.data}', 'success')
         return redirect(url_for('home'))
     return render_template('registration.html', title='Register', reg_form=reg_form)
