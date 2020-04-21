@@ -25,7 +25,7 @@
               <!-- Navbar Right Side -->
               <div class="navbar-nav">
                 <a class="nav-item nav-link" href="#">your books</a>
-                <a class="nav-item nav-link" href="/login">Logout</a>
+                <a class="nav-item nav-link" href={{ url_for('logout') }}>Logout</a>
               </div>
             </div>
           </div>
@@ -47,7 +47,7 @@
             {% endwith %}
             {% block content %}
               <h2>Welcome to your profile</h2>
-              <h3>{{ user.username }}</h3>
+              <h3>{{ user }}</h3>
             {% endblock %}
           </div>
         </div>

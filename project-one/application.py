@@ -72,7 +72,7 @@ def profile():
         user_name = session.get("USERNAME")
         user = User.query.filter_by(username=user_name).first()
         print(user.username)
-        return render_template("profile.html", title="Profile Page", user=user)
+        return render_template("profile.html", title="Profile Page", user=user_name)
     else:
         flash('No user in the session', 'danger')
         return redirect(url_for('login'))
@@ -82,6 +82,10 @@ def profile():
 @app.route("/logout")
 def logout():
     session.pop("USERNAME", None)
+    try:
+        print("In logout",session.get("USERNAME"))
+    except:
+        print("got error")
     flash('Logout successful', 'success')
     return redirect(url_for('login'))
 
