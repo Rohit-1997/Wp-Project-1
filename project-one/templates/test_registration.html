@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+
+{% block content %}
+<div class="container content-section ">
+
+  <form class="p-5" action="" method="Post">
+
+      <legend class="border-bottom mb-4">Sign Up</legend>
+
+      <!-- Username -->
+      <div class="form-group form-group-lg">
+        <label for="username">Username:</label>
+        <input type="text" id="username-input" class="form-control mb-4" placeholder="Username" name="reg-username">
+      </div>
+
+      <!-- Email -->
+      <div class="form-group form-group-lg">
+        <label for="email">Email address:</label>
+        <input type="email" id="email-input" class="form-control mb-4" placeholder="Email" name="reg-mail">
+      </div>
+
+      <!-- Password -->
+      <div class="form-group form-group-lg">
+        <label for="email">Password:</label>
+        <input type="password" id="password-input" class="form-control mb-4" placeholder="Password" name="reg-password">
+      </div>
+
+      <!-- Sign in button -->
+      <div class="form-group form-group-lg">
+        <button class="btn btn-info btn-block my-4" type="submit">Sign up</button>
+      </div>
+      <div class="border-top pt-3">
+        <small class="text-muted">
+          Already a user, Sign in! <a class="ml-2" href="{{ url_for('login') }}">Sign In</a>
+        </small>
+      </div>
+  </form>
+
+
+</div>
+
+
+{% endblock %}
