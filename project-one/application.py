@@ -50,10 +50,8 @@ def login():
     if request.method == "POST":
         email = request.form.get("mail")
         password = request.form.get("password")
-        print(password)
         # get the creds from the database
         user = User.query.filter_by(email=email).first()
-        print(user.password)
         if user and user.password == password:
             # setting up the session varaible
             session["USERNAME"] = user.username
@@ -82,10 +80,6 @@ def profile():
 @app.route("/logout")
 def logout():
     session.pop("USERNAME", None)
-    try:
-        print("In logout",session.get("USERNAME"))
-    except:
-        print("got error")
     flash('Logout successful', 'success')
     return redirect(url_for('login'))
 
