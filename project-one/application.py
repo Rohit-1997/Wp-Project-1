@@ -92,6 +92,11 @@ def book_search():
         return redirect(url_for('profile'))
 
 
+# the book details page
+@app.route("/books/<isbn>")
+def book_details(isbn,title):
+    print(isbn, title)
+    # return render_template('book.html', )
 
 # the sign out route
 @app.route("/logout")
