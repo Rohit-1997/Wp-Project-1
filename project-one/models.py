@@ -25,6 +25,7 @@ class Books(db.Model):
     author = db.Column(db.String(150), nullable=False)
     year = db.Column(db.Integer, nullable=False)
 
+
 class Reviews(db.Model):
     __tablename__ = "reviews"
     review_id = db.Column(db.Integer, primary_key=True, autoincrement=True)

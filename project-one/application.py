@@ -74,6 +74,7 @@ def profile():
         flash('No user in the session', 'danger')
         return redirect(url_for('login'))
 
+
 # the function to handle searchdata
 @app.route("/profile", methods=['POST'])
 def book_search():
@@ -93,10 +94,22 @@ def book_search():
 
 
 # the book details page
-@app.route("/books/<isbn>")
-def book_details(isbn,title):
-    print(isbn, title)
-    # return render_template('book.html', )
+@app.route("/books/<isbn>", methods=["GET","POST"])
+def book_details(isbn):
+    print(isbn)
+    # querying the database
+    book = Books.query.filter_by(isbn=isbn).first()             # query the book based on isbn
+    reviews = Reviews.query.filter_by(book_isbn=isbn).all()     # query for the reviews that were given on that book
+    if request.method == "POST":
+        review_data = request.form.get("post-review-data")
+        rating_data = request.form.get("rating-value")
+        print("The rating data", rating_data)
+        print(int(rating_data))
+        # creating the review object to insert the into the database
+        review = Reviews(book_isbn=book.isbn, user_name=session.get("USERNAME"), rating=int(rating_data), review=review_data)
+        db.session.add(review)
+        db.session.commit()
+    return render_template('book.html', book=book, reviews=reviews)
 
 # the sign out route
 @app.route("/logout")

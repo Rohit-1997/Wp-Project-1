@@ -50,7 +50,7 @@
           <ul class="list-group">
             {% if did_query and book_data %}
               {% for book in book_data %}
-                <li class="list-group-item"><a href="{{ url_for('book_details', isbn=book.isbn, title=book.title) }}">{{ book.title }}, {{ book.author }}, {{ book.isbn }}, {{ book.year }}</a></li>
+                <li class="list-group-item"><a href="{{ url_for('book_details', isbn=book.isbn) }}">{{ book.title }}, {{ book.isbn }}</a></li>
               {% endfor %}
             {% elif not book_data and did_query %}
               <li><h3>Sorry no books found</h3></li>

@@ -1,0 +1,42 @@
+.books-wrapper {
+  background: #fafafa;
+}
+
+.bookdetails-section {
+  margin-top: 70px;
+  margin-bottom: 30px;
+  padding: 20px;
+}
+
+.bookdetails-section li{
+  font-size: 20px;
+}
+
+.review-section {
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+
+}
+
+
+.post-review-section {
+  margin-left: auto;
+  margin-left: auto;
+  margin-top: 30px;
+
+}
+
+.postreview-btn {
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 250px;
+  background: #505458;
+  color: #fafafa;
+}
+
+h4{
+  border-bottom: solid 2px;
+  border-bottom-color: #24292e;
+}
