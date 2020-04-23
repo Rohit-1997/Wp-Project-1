@@ -93,10 +93,20 @@ def book_search():
 
 
 # the book details page
-@app.route("/books/<isbn>")
+@app.route("/books/<isbn>/<title>")
 def book_details(isbn,title):
     print(isbn, title)
-    # return render_template('book.html', )
+    book_data = Books.query.filter_by(isbn = isbn).first()
+    reviews_list = Reviews.query.filter_by(book_isbn = isbn).all()
+    # print(reviews_list)
+    rating = 0
+    count = 0
+    for each in reviews_list:
+        rating = rating + each.rating
+        count = count + 1
+    # print(rating//count)
+    avg_rating = rating//count
+    return render_template('book.html', title = book_data.title, isbn = book_data.isbn, author = book_data.author, year = book_data.year, reviews_list= reviews_list , avg_rating = avg_rating)
 
 # the sign out route
 @app.route("/logout")
