@@ -75,3 +75,14 @@ h1, h2, h3, h4, h5, h6 {
 .search-results li{
   background: #fafafa;
 }
+
+.btn {
+      border-radius: 3px;
+}
+
+.btn-default {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+
