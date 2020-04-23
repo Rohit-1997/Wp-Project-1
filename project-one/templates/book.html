@@ -2,7 +2,7 @@
 
 
 {% block content %}
-<div class="books-wrapper">
+<div class="container-fluid books-wrapper">
   <div class="container bookdetails-section">
     <div class="row">
       <div class="col-md-12">
@@ -22,11 +22,11 @@
       <div class="container review-section">
         <div class="row">
           <div class="col-md-12 p-4">
-                <h4 class="pd-2 mb-2 reviews-header">Reviews</h4>
+                <h4 class="pd-2 mb-2 reviews-header">Reviews:</h4>
                 {% for review in reviews %}
                     <div class="media pd-2">
-                      <img class="mr-3" src="..." alt="Generic placeholder image">
-                      <div class="media-body">
+                      <img class="mr-3" src="/static/default-profile.png" alt="profile image" height="80" width="80">
+                      <div class="media-body pb-2">
                         <h5 class="mt-0">{{ review.user_name }}</h5>
                         <h6 class="mt-0"><strong>Rating: </strong> {{ review.rating }}</h6>
                         {{ review.review }}
@@ -36,7 +36,28 @@
           </div>
         </div>
       </div>
+
+  {% else %}
+    <div class="container review-section">
+      <div class="row">
+        <div class="col-md-12 p-4">
+          <h4>No reviews to display yet, Please provide a review</h4>
+        </div>
+      </div>
+    </div>
   {% endif %}
+
+
+  <!-- area for flash messages -->
+    {% with flash_messages = get_flashed_messages(with_categories=true) %}
+      {% if flash_messages %}
+      {% for category, message in flash_messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+      {% endif %}
+    {% endwith %}
 
 
       <div class="container post-review-section">
@@ -46,7 +67,7 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="post-review-section">
-                  <h4 class="pd-2 mb-3 reviews-header">Drop a review</h4>
+                  <h4 class="pd-2 mb-3 reviews-header">Drop a review:</h4>
                   <form class="" action="{{ url_for('book_details', isbn=book.isbn) }}" method="post">
                     <div class="form-group">
                       <textarea name="post-review-data" rows="8" cols="80"></textarea>

@@ -82,6 +82,11 @@ def book_search():
     search_data = request.form.get('search-input')
     dropdown_data = request.form.get('dropdown-value')
 
+    # check if the drop down value is selected or not
+    if dropdown_data is None or search_data == "":
+        flash('Please select the search option or type in the words', 'danger')
+        return redirect(url_for('book_search'))
+
     # querying the data
     search_data= f"{search_data}%"         # this is the formatted version for querying
     try:
@@ -90,7 +95,7 @@ def book_search():
     except Exception as e:
         print(str(e))
         flash('No data for the search', 'danger')
-        return redirect(url_for('profile'))
+        return redirect(url_for('book_search'))
 
 
 # the book details page
@@ -103,12 +108,24 @@ def book_details(isbn):
     if request.method == "POST":
         review_data = request.form.get("post-review-data")
         rating_data = request.form.get("rating-value")
-        print("The rating data", rating_data)
-        print(int(rating_data))
+        # print("The rating data", rating_data)
+        # print(int(rating_data))
+
+        # testing the edge cases if the users submit without writing the review
+        if review_data == "" or rating_data is None:
+            flash('Please enter the data in the review box or select the rating', 'danger')
+            return redirect(url_for('book_details', isbn=isbn))
+
         # creating the review object to insert the into the database
-        review = Reviews(book_isbn=book.isbn, user_name=session.get("USERNAME"), rating=int(rating_data), review=review_data)
-        db.session.add(review)
-        db.session.commit()
+        try:
+            review = Reviews(book_isbn=book.isbn, user_name=session.get("USERNAME"), rating=int(rating_data), review=review_data)
+            db.session.add(review)
+            db.session.commit()
+            return redirect(url_for('book_details', isbn=isbn))
+        except Exception as e:
+            print(str(e))
+            flash('You have submitted your review already', 'danger')
+            return redirect(url_for('book_details', isbn=isbn))
     return render_template('book.html', book=book, reviews=reviews)
 
 # the sign out route
