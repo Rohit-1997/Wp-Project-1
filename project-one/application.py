@@ -95,26 +95,28 @@ def book_search():
 # the book details page
 @app.route("/books/<isbn>" , methods = ['POST', 'GET'])
 def book_details(isbn):
-    b = Books.query.filter_by(isbn = isbn).first()
-    r = Reviews.query.filter_by(book_isbn = isbn)
+    # b = Books.query.filter_by(isbn = isbn).first()
+    # r = Reviews.query.filter_by(book_isbn = isbn)
     if request.method == 'POST':
         re = request.form.get('post-review-data')
         re1 = request.form.get('rating-value')
         try:
             if re != '' and  re1 != None :
-                rev = Reviews(book_isbn = b.isbn, user_name = session.get("USERNAME"), rating = re1, review = re)
+                rev = Reviews(book_isbn = isbn, user_name = session.get("USERNAME"), rating = re1, review = re)
                 db.session.add(rev)
                 db.session.commit()
             else:
                 flash('Please enter the data in the review box or select the rating', 'danger')
                 return redirect(url_for('book_details', isbn=isbn))
-            return render_template('book.html', book = b, reviews =  r )
+                # return render_template('practice.html')
+            return redirect(url_for('book_details', isbn=isbn))
         except Exception:
             flash('You have already reviewed it', 'danger')
             return redirect(url_for('book_details', isbn=isbn))
 
     else:
-        # print(isbn, title)
+        b = Books.query.filter_by(isbn = isbn).first()
+        r = Reviews.query.filter_by(book_isbn = isbn)
         return render_template('book.html', book = b, reviews =  r )
 
 # the sign out route
