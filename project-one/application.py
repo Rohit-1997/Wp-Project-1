@@ -1,6 +1,6 @@
 # importing the modules
-import os
-from flask import Flask, render_template, redirect, url_for, flash, session, request
+import os, requests
+from flask import Flask, render_template, redirect, url_for, flash, session, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import *
 
@@ -14,6 +14,9 @@ app.config['SECRET_KEY'] = 'f9a1520561f1faf67f36a3a620a45e80'
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
+
+# the api_key
+api_key = "Hs4Jb2udCEGREnCtluAzqA"
 
 
 # The home page function
@@ -108,8 +111,6 @@ def book_details(isbn):
     if request.method == "POST":
         review_data = request.form.get("post-review-data")
         rating_data = request.form.get("rating-value")
-        # print("The rating data", rating_data)
-        # print(int(rating_data))
 
         # testing the edge cases if the users submit without writing the review
         if review_data == "" or rating_data is None:
@@ -142,10 +143,32 @@ def admin():
     """
     Query the registration data and display to the end user
     """
-    data = User.query.all()
+    data = User.query.order_by(User.register_date.desc()).all()
     for ele in data:
         print(ele.username)
     return render_template('admin.html', data=data)
+
+
+# The api route
+@app.route("/api/<string:isbn>")
+def api_call(isbn):
+    # check to see if the isbn exists
+    book = Books.query.get(isbn)
+    if book is None:
+        return jsonify({"error": "Invalid ISBN number"}), 404
+
+    # making api call
+    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": api_key, "isbns": isbn})
+    res_json = res.json()
+    print(res_json)
+    return jsonify({
+        "title": book.title,
+        "author": book.author,
+        "year": book.year,
+        "isbn": isbn,
+        "review_count": res_json["books"][0]["reviews_count"],
+        "average_score": res_json["books"][0]["average_rating"]
+    })
 
 
 
