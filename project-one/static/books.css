@@ -1,0 +1,46 @@
+.bookdetails-section {
+  margin-top: 70px;
+  margin-bottom: 30px;
+  padding: 20px;
+}
+
+.bookdetails-section li{
+  font-size: 20px;
+}
+
+.review-section {
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+}
+
+.post-review-section {
+  margin-left: auto;
+  margin-left: auto;
+  margin-top: 30px;
+  padding-left: 20px;
+}
+
+.postreview-btn {
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 250px;
+  background: #505458;
+  color: #fafafa;
+}
+
+
+.review-section, .post-review-section {
+  background: #fafafa;
+  border-radius:.25rem!important;
+}
+
+
+.review-section .media {
+  margin-top: 20px;
+  border-bottom: inset 0.5px;
+  border-bottom-color: #24292e;
+  margin-bottom: 20px;
+}

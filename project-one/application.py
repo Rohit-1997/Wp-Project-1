@@ -55,7 +55,6 @@ def login():
         if user and user.password == password:
             # setting up the session varaible
             session["USERNAME"] = user.username
-            flash('login succecssful', 'success')
             return redirect(url_for('profile'))
         else:
             flash('login not succecssful', 'danger')
@@ -75,6 +74,50 @@ def profile():
         flash('No user in the session', 'danger')
         return redirect(url_for('login'))
 
+# the function to handle searchdata
+@app.route("/profile", methods=['POST'])
+def book_search():
+    # get the text typed in by the user
+    search_data = request.form.get('search-input')
+    dropdown_data = request.form.get('dropdown-value')
+
+    # querying the data
+    search_data= f"{search_data}%"         # this is the formatted version for querying
+    try:
+        book_data = Books.query.filter(getattr(Books,dropdown_data).like(search_data)).all()
+        return render_template('profile.html', title="Profile Page", book_data=book_data, user=session.get("USERNAME"), did_query=True)
+    except Exception as e:
+        print(str(e))
+        flash('No data for the search', 'danger')
+        return redirect(url_for('profile'))
+
+
+# the book details page
+@app.route("/books/<isbn>" , methods = ['POST', 'GET'])
+def book_details(isbn):
+    # b = Books.query.filter_by(isbn = isbn).first()
+    # r = Reviews.query.filter_by(book_isbn = isbn)
+    if request.method == 'POST':
+        re = request.form.get('post-review-data')
+        re1 = request.form.get('rating-value')
+        try:
+            if re != '' and  re1 != None :
+                rev = Reviews(book_isbn = isbn, user_name = session.get("USERNAME"), rating = re1, review = re)
+                db.session.add(rev)
+                db.session.commit()
+            else:
+                flash('Please enter the data in the review box or select the rating', 'danger')
+                return redirect(url_for('book_details', isbn=isbn))
+                # return render_template('practice.html')
+            return redirect(url_for('book_details', isbn=isbn))
+        except Exception:
+            flash('You have already reviewed it', 'danger')
+            return redirect(url_for('book_details', isbn=isbn))
+
+    else:
+        b = Books.query.filter_by(isbn = isbn).first()
+        r = Reviews.query.filter_by(book_isbn = isbn)
+        return render_template('book.html', book = b, reviews =  r )
 
 # the sign out route
 @app.route("/logout")
@@ -82,7 +125,6 @@ def logout():
     session.pop("USERNAME", None)
     flash('Logout successful', 'success')
     return redirect(url_for('login'))
-
 
 
 # The admin route
@@ -95,6 +137,7 @@ def admin():
     for ele in data:
         print(ele.username)
     return render_template('admin.html', data=data)
+
 
 
 
