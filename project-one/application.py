@@ -102,45 +102,6 @@ def book_search():
 
 
 # the book details page
-<<<<<<< HEAD
-@app.route("/books/<isbn>" , methods = ['POST', 'GET'])
-def book_details(isbn):
-    # b = Books.query.filter_by(isbn = isbn).first()
-    # r = Reviews.query.filter_by(book_isbn = isbn)
-    if request.method == 'POST':
-        re = request.form.get('post-review-data')
-        re1 = request.form.get('rating-value')
-        try:
-            if re != '' and  re1 != None :
-                rev = Reviews(book_isbn = isbn, user_name = session.get("USERNAME"), rating = re1, review = re)
-                db.session.add(rev)
-                db.session.commit()
-            else:
-                flash('Please enter the data in the review box or select the rating', 'danger')
-                return redirect(url_for('book_details', isbn=isbn))
-                # return render_template('practice.html')
-            return redirect(url_for('book_details', isbn=isbn))
-        except Exception:
-            flash('You have already reviewed it', 'danger')
-            return redirect(url_for('book_details', isbn=isbn))
-
-    else:
-        b = Books.query.filter_by(isbn = isbn).first()
-        r = Reviews.query.filter_by(book_isbn = isbn)
-        return render_template('book.html', book = b, reviews =  r )
-@app.route("/books/<isbn>/<title>")
-def book_details(isbn,title):
-    print(isbn, title)
-    book_data = Books.query.filter_by(isbn = isbn).first()
-    reviews_list = Reviews.query.filter_by(book_isbn = isbn).all()
-    rating = 0
-    count = 0
-    for each in reviews_list:
-        rating = rating + each.rating
-        count = count + 1
-    avg_rating = rating//count
-    return render_template('book.html', title = book_data.title, isbn = book_data.isbn, author = book_data.author, year = book_data.year, reviews_list= reviews_list , avg_rating = avg_rating)
-=======
 @app.route("/books/<isbn>", methods=["GET","POST"])
 def book_details(isbn):
     print(isbn)
@@ -167,7 +128,6 @@ def book_details(isbn):
             flash('You have submitted your review already', 'danger')
             return redirect(url_for('book_details', isbn=isbn))
     return render_template('book.html', book=book, reviews=reviews)
->>>>>>> Search-Feature
 
 # the sign out route
 @app.route("/logout")
