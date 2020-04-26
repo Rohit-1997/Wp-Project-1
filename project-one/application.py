@@ -1,6 +1,6 @@
 # importing the modules
-import os
-from flask import Flask, render_template, redirect, url_for, flash, session, request
+import os, requests
+from flask import Flask, render_template, redirect, url_for, flash, session, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import *
 
@@ -14,6 +14,9 @@ app.config['SECRET_KEY'] = 'f9a1520561f1faf67f36a3a620a45e80'
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
+
+# the api_key
+api_key = "Hs4Jb2udCEGREnCtluAzqA"
 
 
 # The home page function
@@ -74,12 +77,18 @@ def profile():
         flash('No user in the session', 'danger')
         return redirect(url_for('login'))
 
+
 # the function to handle searchdata
 @app.route("/profile", methods=['POST'])
 def book_search():
     # get the text typed in by the user
     search_data = request.form.get('search-input')
     dropdown_data = request.form.get('dropdown-value')
+
+    # check if the drop down value is selected or not
+    if dropdown_data is None or search_data == "":
+        flash('Please select the search option or type in the words', 'danger')
+        return redirect(url_for('book_search'))
 
     # querying the data
     search_data= f"{search_data}%"         # this is the formatted version for querying
@@ -89,10 +98,11 @@ def book_search():
     except Exception as e:
         print(str(e))
         flash('No data for the search', 'danger')
-        return redirect(url_for('profile'))
+        return redirect(url_for('book_search'))
 
 
 # the book details page
+<<<<<<< HEAD
 @app.route("/books/<isbn>" , methods = ['POST', 'GET'])
 def book_details(isbn):
     # b = Books.query.filter_by(isbn = isbn).first()
@@ -130,6 +140,34 @@ def book_details(isbn,title):
         count = count + 1
     avg_rating = rating//count
     return render_template('book.html', title = book_data.title, isbn = book_data.isbn, author = book_data.author, year = book_data.year, reviews_list= reviews_list , avg_rating = avg_rating)
+=======
+@app.route("/books/<isbn>", methods=["GET","POST"])
+def book_details(isbn):
+    print(isbn)
+    # querying the database
+    book = Books.query.filter_by(isbn=isbn).first()             # query the book based on isbn
+    reviews = Reviews.query.filter_by(book_isbn=isbn).all()     # query for the reviews that were given on that book
+    if request.method == "POST":
+        review_data = request.form.get("post-review-data")
+        rating_data = request.form.get("rating-value")
+
+        # testing the edge cases if the users submit without writing the review
+        if review_data == "" or rating_data is None:
+            flash('Please enter the data in the review box or select the rating', 'danger')
+            return redirect(url_for('book_details', isbn=isbn))
+
+        # creating the review object to insert the into the database
+        try:
+            review = Reviews(book_isbn=book.isbn, user_name=session.get("USERNAME"), rating=int(rating_data), review=review_data)
+            db.session.add(review)
+            db.session.commit()
+            return redirect(url_for('book_details', isbn=isbn))
+        except Exception as e:
+            print(str(e))
+            flash('You have submitted your review already', 'danger')
+            return redirect(url_for('book_details', isbn=isbn))
+    return render_template('book.html', book=book, reviews=reviews)
+>>>>>>> Search-Feature
 
 # the sign out route
 @app.route("/logout")
@@ -145,10 +183,32 @@ def admin():
     """
     Query the registration data and display to the end user
     """
-    data = User.query.all()
+    data = User.query.order_by(User.register_date.desc()).all()
     for ele in data:
         print(ele.username)
     return render_template('admin.html', data=data)
+
+
+# The api route
+@app.route("/api/<string:isbn>")
+def api_call(isbn):
+    # check to see if the isbn exists
+    book = Books.query.get(isbn)
+    if book is None:
+        return jsonify({"error": "Invalid ISBN number"}), 404
+
+    # making api call
+    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": api_key, "isbns": isbn})
+    res_json = res.json()
+    print(res_json)
+    return jsonify({
+        "title": book.title,
+        "author": book.author,
+        "year": book.year,
+        "isbn": isbn,
+        "review_count": res_json["books"][0]["reviews_count"],
+        "average_score": res_json["books"][0]["average_rating"]
+    })
 
 
 
