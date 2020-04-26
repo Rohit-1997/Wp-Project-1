@@ -97,3 +97,47 @@
       </div>
 </div>
 {% endblock %}
+{% block content %}
+
+<div class="container about-BookPage Justify-content-center" style="background-color:#547594; padding-top: 20px;">
+    <h1 style="text-align: center; font-weight: bolder; color: black; padding-top: 50px; padding-bottom: 5px; font-size: 45px; background-color:#a4aab0;" >{{title}}</h1>
+    <div class="row profile-row" style="padding-top: 50px;">
+        <!-- image column-->
+        <div class="col-5">
+            <div class="max-4">
+                <h1 style="font-weight: bold;">Book details :</h1>
+                <h3> Title : {{title}}</h3>
+                <h3> ISBN : {{isbn}}</h3>
+                <h3>Author : {{author}}</h3>
+                <h3>Published year : {{year}}</h3>
+                <h2 style=" font-weight: bold; margin-left: 0px; margin-top: 30px;">Book Rating :</h2>
+                <div class="jumbotron jumbotron-fluid" style=" height: 15px; width: 380px; padding-top: 7px; background-color: rgb(197, 213, 226);">
+                    <div class="container">
+                        <h4 style="color:black; font-family: 'Times New Roman', Times, serif;">Overall rating : {{ avg_rating }} out of 5</h4>
+                    </div>
+                </div>
+   
+            </div>
+        </div>
+
+        <!-- text column-->
+        <div class="col-7">
+            <div class="max-4">
+                <div>
+                    <h2 style=" font-weight: bold;">Customer Reviews :</h2>
+                    {% for each in reviews_list %}
+                        <div class="jumbotron jumbotron-fluid" style="height: 100px; padding-top: 1px; background-color: rgb(197, 213, 226);">
+                            <div class="container">
+                                <h4 style="color: black; font-family: 'Times New Roman', Times, serif;font-weight: 500;">Customer Name : {{ each.user_name }}</h4>
+                                <p style="color: black; font-family: 'Times New Roman', Times, serif; padding: 0px; margin: 0px;">Customer Rating : {{ each.rating }} out of 5</p>
+                                <p style="color: black; font-family: 'Times New Roman', Times, serif; padding: 0px; margin: 0px;">Review : {{ each.review }}</p>
+                            </div>
+                        </div>
+                        
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -118,6 +118,18 @@ def book_details(isbn):
         b = Books.query.filter_by(isbn = isbn).first()
         r = Reviews.query.filter_by(book_isbn = isbn)
         return render_template('book.html', book = b, reviews =  r )
+@app.route("/books/<isbn>/<title>")
+def book_details(isbn,title):
+    print(isbn, title)
+    book_data = Books.query.filter_by(isbn = isbn).first()
+    reviews_list = Reviews.query.filter_by(book_isbn = isbn).all()
+    rating = 0
+    count = 0
+    for each in reviews_list:
+        rating = rating + each.rating
+        count = count + 1
+    avg_rating = rating//count
+    return render_template('book.html', title = book_data.title, isbn = book_data.isbn, author = book_data.author, year = book_data.year, reviews_list= reviews_list , avg_rating = avg_rating)
 
 # the sign out route
 @app.route("/logout")
