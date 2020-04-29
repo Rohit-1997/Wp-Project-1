@@ -1,10 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("In JS");
+    var isbn = "";
     document.querySelector("#search-form").onsubmit = () => {
         // initializing a new request
         console.log("In form submit");
         const request = new XMLHttpRequest();
-        const isbn = document.querySelector("#search-input").value;
+        isbn = document.querySelector("#search-input").value;
         request.open('POST', '/api/search');
 
         // Creating a callback onload function
@@ -12,14 +12,31 @@ document.addEventListener('DOMContentLoaded', () => {
         request.onload = () => {
             // Get the json data
             const data = JSON.parse(request.responseText);
+            const mainList = document.querySelector("#result-area");
+            mainList.innerHTML = "";
             console.log(data);
             
             // update the result area
             if (data.success) {
-                const contents = `The title of the book is: ${data.title}, The rating is: ${data.average_score}`;
-                document.querySelector("#result-area").innerHTML = contents;
+                const books = data.books;
+                let contents = "";
+                console.log(books)
+                books.map((book) => {
+                    let content = `Book Title: ${book.title}, Books ISBN: ${book.isbn}`;
+                    let list_item = document.createElement("li");
+                    let link_item = document.createElement("a");
+                    list_item.setAttribute("class", "list-group-item");
+                    link_item.setAttribute("id", `${book.isbn}`);
+                    link_item.setAttribute("href", "");
+                    link_item.innerHTML = content;
+                    list_item.append(link_item);
+                    mainList.appendChild(list_item);
+                })
             } else {
-                document.querySelector('#result-area').innerHTML = "There was some error";
+                let header = document.createElement("h3");
+                header.setAttribute("class", "text-center");
+                header.innerHTML = "Sorry, There are no books with this isbn or you have entered invalid isbn";
+                document.querySelector('#result-area').appendChild(header);
             }
         }
 
@@ -28,5 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
         data.append('isbn', isbn);
         request.send(data);
         return false;   // To prevent the reload of the page
+    }
+
+    document.querySelector("#result-area").onclick = () => {
+        const request = new XMLHttpRequest();
+        request.open('POST', '/api/book_details');
+        request.send(isbn);
     }
 })

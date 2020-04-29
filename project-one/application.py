@@ -1,5 +1,5 @@
 # importing the modules
-import os, requests
+import os, requests, json
 from flask import Flask, render_template, redirect, url_for, flash, session, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import *
@@ -177,30 +177,39 @@ def api_call(isbn):
 def user_home():
     return render_template('user_home.html', user=session.get("USERNAME"))
 
+
 # The api/search route to handle the search api request
 @app.route("/api/search", methods=["POST"])
 def search_api():
     # get the form data
     isbn = request.form.get("isbn")
     print("The isbn value: ", isbn)
-        
-    book = Books.query.get(isbn)
-    if book is None:
+    search_isbn = f'{isbn}%'
+    books = Books.query.filter(Books.isbn.like(search_isbn)).all()
+    print(books)
+    if books is None or books == []:
         return jsonify({"success": False}), 404
 
-    # making api call
-    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": api_key, "isbns": isbn})
-    res_json = res.json()
-    print(res_json)
+    books_searialized = []
+    for book in books:
+        dict_data = {}
+        dict_data["title"] = book.title
+        dict_data["author"] = book.author
+        dict_data["isbn"] = book.isbn
+        books_searialized.append(dict_data)
+
+    print(books_searialized)
     return jsonify({
         "success": True,
-        "title": book.title,
-        "author": book.author,
-        "year": book.year,
-        "isbn": isbn,
-        "review_count": res_json["books"][0]["reviews_count"],
-        "average_score": res_json["books"][0]["average_rating"]
+        "books": books_searialized
     })
+
+# Handling the route for book_details api
+@app.route("/api/book_details", methods=["POST"])
+def api_book_details():
+    # get the details
+    # isbn = request.data
+    # print("In the book details api",isbn)
 
 
 
