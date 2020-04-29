@@ -129,6 +129,7 @@ def book_details(isbn):
             return redirect(url_for('book_details', isbn=isbn))
     return render_template('book.html', book=book, reviews=reviews)
 
+
 # the sign out route
 @app.route("/logout")
 def logout():
@@ -170,6 +171,36 @@ def api_call(isbn):
         "average_score": res_json["books"][0]["average_rating"]
     })
 
+
+# The user home page
+@app.route("/userhome")
+def user_home():
+    return render_template('user_home.html', user=session.get("USERNAME"))
+
+# The api/search route to handle the search api request
+@app.route("/api/search", methods=["POST"])
+def search_api():
+    # get the form data
+    isbn = request.form.get("isbn")
+    print("The isbn value: ", isbn)
+        
+    book = Books.query.get(isbn)
+    if book is None:
+        return jsonify({"success": False}), 404
+
+    # making api call
+    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": api_key, "isbns": isbn})
+    res_json = res.json()
+    print(res_json)
+    return jsonify({
+        "success": True,
+        "title": book.title,
+        "author": book.author,
+        "year": book.year,
+        "isbn": isbn,
+        "review_count": res_json["books"][0]["reviews_count"],
+        "average_score": res_json["books"][0]["average_rating"]
+    })
 
 
 

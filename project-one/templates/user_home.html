@@ -1,0 +1,35 @@
+{% extends "profile_base.html" %}
+
+{% block content %}
+
+<!-- The welcome section of the page -->
+<div class="container-fluid welcome-section">
+    <div class="row justify-content-center">
+      <div class="col-md-12 justify-content-center">
+        <h2 class="text-center">Welcome to the api page, {{ user }}!!</h2>
+        <br />
+        <h3 class="text-center">please search with isbn number in the search box</h3>
+      </div>
+    </div>
+</div>
+
+<!-- The form section -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12 d-flex justify-content-center">
+            <form id="search-form" method="Post">
+                <div class="form-group">
+                    <input type="text" class="form-control userhome-search" placeholder="please enter isbn......." name="search-input" id="search-input"/>
+                    <input type="submit" class="btn search-btn btn-lg justify-content-center" value="Search" />
+                </div>                  
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- The result area -->
+<div class="container mt-5">
+    <h3 class="text-center"><a id="result-area" href=""></a></h3>
+</div>
+<script src="{{ url_for('static', filename='HandleSearch.js') }}"></script>
+{% endblock %}
