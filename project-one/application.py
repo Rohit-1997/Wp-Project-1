@@ -1,6 +1,6 @@
 # importing the modules
-import os
-from flask import Flask, render_template, redirect, url_for, flash, session, request
+import os, requests,json
+from flask import Flask, render_template, redirect, url_for, flash, session, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import *
 
@@ -97,6 +97,9 @@ def book_search():
 def book_details(isbn):
     # b = Books.query.filter_by(isbn = isbn).first()
     # r = Reviews.query.filter_by(book_isbn = isbn)
+    if session.get("USERNAME") is  None:
+        flash('No user in the session', 'danger')
+        return redirect(url_for('login'))
     if request.method == 'POST':
         re = request.form.get('post-review-data')
         re1 = request.form.get('rating-value')
@@ -115,9 +118,13 @@ def book_details(isbn):
             return redirect(url_for('book_details', isbn=isbn))
 
     else:
-        b = Books.query.filter_by(isbn = isbn).first()
-        r = Reviews.query.filter_by(book_isbn = isbn)
-        return render_template('book.html', book = b, reviews =  r )
+        if session.get("USERNAME") is not None: 
+            b = Books.query.filter_by(isbn = isbn).first()
+            r = Reviews.query.filter_by(book_isbn = isbn)
+            return render_template('book.html', book = b, reviews =  r )
+        else:
+            flash('No user in the session', 'danger')
+            return redirect(url_for('login'))
 
 # the sign out route
 @app.route("/logout")
@@ -139,6 +146,105 @@ def admin():
     return render_template('admin.html', data=data)
 
 
+# The user home page
+@app.route("/userhome")
+def user_home():
+    if session.get("USERNAME") is  None:
+        flash('No user in the session', 'danger')
+        return redirect(url_for('login'))
+    else:
+        return render_template('user_home.html', user=session.get("USERNAME"))
+
+
+# The api/search route to handle the search api request
+@app.route("/api/search", methods=["POST"])
+def search_api():
+    # get the form data
+    isbn = request.form.get("isbn")
+    print("The isbn value: ", isbn)
+    search_isbn = f'{isbn}%'
+    books = Books.query.filter(Books.isbn.like(search_isbn)).all()
+    print(books)
+    if books is None or books == []:
+        return jsonify({"success": False}), 404
+
+    books_searialized = []
+    for book in books:
+        dict_data = {}
+        dict_data["title"] = book.title
+        dict_data["author"] = book.author
+        dict_data["isbn"] = book.isbn
+        books_searialized.append(dict_data)
+
+    print(books_searialized)
+    return jsonify({
+        "success": True,
+        "books": books_searialized
+    })
+
+# Handling the route for book_details api
+@app.route("/api/book_details", methods=["POST"])
+def api_book_details():
+    # get the details
+    isbn = request.data.decode()
+    print("In the book details api",isbn)
+    book = Books.query.filter_by(isbn = isbn).first()
+    reviews = Reviews.query.filter_by(book_isbn=isbn).all() 
+    for i in reviews:
+        print(i)
+    print(reviews,len(reviews),type(reviews))
+    print(book.title)
+    if reviews == []:
+        return jsonify({'title': book.title,
+            'author':book.author,
+            'isbn': book.isbn,
+            'year':book.year,
+            'reviews': 'null'
+            })
+    r = []
+    for review in reviews:
+        dic = {}
+        dic['username'] = review.user_name
+        dic['rating'] = review.rating
+        dic['review'] = review.review
+        r.append(dic)
+    print(r)
+    return jsonify({'title':book.title,
+            'author':book.author,
+            'isbn': book.isbn,
+            'year': book.year,
+            'reviews': r
+            })
+
+@app.route("/api/submit_review", methods=["POST"])
+def api_submit_review():
+    user = session.get("USERNAME")
+    re = request.form.get('post-review-data')
+    re1 = request.form.get('rating-value')
+    isbn = request.form.get('isbn')
+    print(re,re1,isbn,'here')
+    if re == '' or re1=='0':
+        return jsonify ({
+            'success' : False,
+            'user' : user,
+            'statement':'Please complete the feedback or  Select a rating '
+            })
+    try:
+        review = Reviews(book_isbn=isbn, user_name=user, rating=int(re1), review=re)
+        db.session.add(review)
+        db.session.commit()
+        return jsonify({
+            'success' : True,
+            'user' : user,
+            'statement':''
+            })
+    except Exception as e:
+        print(str(e))
+        return jsonify ({
+            'success' : False,
+            'user' : user,
+            'statement':'Already Reviewed'
+            })
 
 
 if __name__ == "__main__":

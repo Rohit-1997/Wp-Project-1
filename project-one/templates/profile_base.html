@@ -10,6 +10,7 @@
     <!-- My style sheet -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='profile.css') }}" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='books.css') }} ">
+     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='userHome.css') }}" />
     {% if title %}
       <title>{{ title }}</title>
     {% else %}
@@ -29,11 +30,11 @@
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
               <a class="nav-item nav-link" href="/">Home</a>
-              <a class="nav-item nav-link" href="/about">Your Books</a>
+               <a class="nav-item nav-link" href="{{ url_for('user_home') }}">User Home</a>
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
-              <a class="nav-item nav-link" href="/login">Profile</a>
+              <a class="nav-item nav-link" href="{{ url_for('book_search') }}">Profile</a>
               <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
             </div>
           </div>
