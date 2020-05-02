@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <!-- My style sheet -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='profile.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='books.css') }}" />
     {% if title %}
       <title>{{ title }}</title>
     {% else %}
@@ -31,18 +30,19 @@
       <!-- Bootstrap basic Navbar -->
       <nav class="navbar navbar-expand-md bg-steel navbar-dark fixed-top">
         <div class="container">
-          <a class="navbar-brand mr-4" href="#">Project One</a>
+          <a class="navbar-brand mr-4" href="/">Project One</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="{{ url_for('book_search') }}">Search Books</a>
+              <a class="nav-item nav-link" href="/">Home</a>
+              <a class="nav-item nav-link" href="{{ url_for('home_API') }}">User Home</a>
               <a class="nav-item nav-link" href="/about">Your Books</a>
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
-              <a class="nav-item nav-link" href="{{ url_for('profile') }}">Profile</a>
+              <a class="nav-item nav-link" href="/login">Profile</a>
               <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
             </div>
           </div>
@@ -50,8 +50,17 @@
       </nav>
     </header>
 
-
-
+    <!-- the main section of the page -->
+      {% with flash_messages = get_flashed_messages(with_categories=true) %}
+        {% if flash_messages %}
+        {% for category, message in flash_messages %}
+          <div class="alert alert-{{ category }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+        {% endif %}
+      {% endwith %}
+      
       {% block content %}{% endblock %}
 
 

@@ -1,5 +1,5 @@
 # importing the modules
-import os, requests
+import os, json
 from flask import Flask, render_template, redirect, url_for, flash, session, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from models import *
@@ -168,6 +168,39 @@ def api_call(isbn):
         "isbn": isbn,
         "review_count": res_json["books"][0]["reviews_count"],
         "average_score": res_json["books"][0]["average_rating"]
+    })
+
+@app.route("/userhome")
+def home_API():
+    if session.get("USERNAME") is  None:
+        flash('No user in the session', 'danger')
+        return redirect(url_for('login'))
+    else:
+        return render_template('home_API.html', user=session.get("USERNAME"))
+
+@app.route("/api/search/isbn", methods=["POST"])
+def search_api():
+    # get the form data
+    isbn = request.form.get("isbn")
+    print("The isbn value: ", isbn)
+    search_isbn = f'{isbn}%'
+    books = Books.query.filter(Books.isbn.like(search_isbn)).all()
+    print(books)
+    if books is None or books == []:
+        return jsonify({"success": False}), 404
+
+    books_searialized = []
+    for book in books:
+        dict_data = {}
+        dict_data["title"] = book.title
+        dict_data["author"] = book.author
+        dict_data["isbn"] = book.isbn
+        books_searialized.append(dict_data)
+
+    print(books_searialized)
+    return jsonify({
+        "success": True,
+        "books": books_searialized
     })
 
 
