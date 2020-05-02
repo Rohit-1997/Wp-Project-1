@@ -1,0 +1,52 @@
+{% extends "profile_base.html" %}
+
+<h1> hiii this is pranay</h1>
+{% block content %}
+    <div class="container-fluid welcome-section">
+      <div class="row justify-content-center">
+        <div class="col-md-4">
+
+        </div>
+        <div class="col-md-4">
+          <h2 class="text-center">Welcome to your profile {{ user }}!!</h2>
+        </div>
+        <div class="col-md-4">
+
+        </div>
+      </div>
+    </div>
+
+
+    <div class="container justify-content-center search-section">
+      <div class="row">
+        <div class="col-md-12">
+          <form class="" id = "API-search-form"method="post">
+            
+            <div class="input-group search-bar">
+                  <input type="text" class="form-control search-box" placeholder="please enter isbn number of a book" name="search-input" id = "search-input">
+            </div>
+
+              <div class="row pt-3 search-button">
+                  <input type="submit" class="btn search-btn btn-lg justify-content-center" value="Search" />
+              </div>
+          </form>
+        </div>
+        <h3> </h3>
+
+      </div>
+    </div>
+
+
+    <!-- The result area -->
+    <hr  width="10" height = '1000' > 
+    <div id = 'block' class="container mt-5">
+        <ul id="result-area" class="list-group">
+
+        </ul>
+    </div>
+
+
+    <script src="{{ url_for('static', filename='javascript.js') }}"></script>
+
+
+{% endblock %}
